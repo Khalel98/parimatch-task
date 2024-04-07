@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home</title>
+  <link rel="stylesheet" href="/source/scss/style.css" />
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+</head>
+<body>
+<div class="app-wrap">
+  <header>
+    <input
+      type="text"
+      autocomplete="off"
+      class="search-box"
+      id="search-box"
+      placeholder="Search for a city..."
+    />
+    <button id="search-btn">Search</button>
+  </header>
+  <main>
+    <div class="weather-icon">
+      <img id="weather-icon" src="" alt="Weather icon" />
+    </div>
+    <section class="location">
+      <div class="city"></div>
+      <div class="date"></div>
+    </section>
+    <div class="current">
+      <div class="temp"></div>
+      <div class="weather"></div>
+      <div class="hi-low"></div>
+    </div>
+    <table id="forecast-table">
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>High</th>
+        <th>Low</th>
+        <th>Weather</th>
+      </tr>
+      </thead>
+      <tbody id="forecast-data">
+      <!-- Forecast data will be inserted here -->
+      </tbody>
+    </table>
+  </main>
+</div>
+
+<script src="./js/weather.js"></script>
+</body>
+</html>
