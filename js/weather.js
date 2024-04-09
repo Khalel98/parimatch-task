@@ -1,7 +1,10 @@
-var apiKey = "9b81d3e4265e2d1a5b8b73f1591ec139"; // Замените на ваш актуальный API ключ
-
-document.getElementById("search-btn").addEventListener("click", function () {
-  var cityName = document.getElementById("search-box").value;
+var apiKey = "9b81d3e4265e2d1a5b8b73f1591ec139";
+function searchWeatherByCity() {
+  var cityName = document.getElementById("search-box").value.trim();
+  if (cityName === "") {
+    alert("Please enter a city name.");
+    return;
+  }
 
   var apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=metric`;
 
@@ -16,14 +19,14 @@ document.getElementById("search-btn").addEventListener("click", function () {
       console.log(data);
       displayWeatherData(data.city, cityName);
       displayWeeklyForecast(data.list);
+      document.getElementById("preloader").style.display = "none";
+      document.getElementById("content").style.display = "block";
     })
     .catch((error) => {
-      console.error(
-        "There has been a problem with your fetch operation:",
-        error
-      );
+      console.error("Error:", error);
+      alert("Failed!");
     });
-});
+}
 
 function displayWeatherData(cityData, cityName) {
   var cityDiv = document.querySelector(".city");
@@ -41,15 +44,12 @@ function displayWeeklyForecast(forecasts) {
   var forecastData = document.getElementById("forecast-data");
   forecastData.innerHTML = "";
 
-  // Создаем объект, который будет содержать прогнозы погоды по дням недели
   var weeklyForecast = {};
 
-  // Проходим по всем элементам списка прогнозов и группируем их по дням недели
   forecasts.forEach((forecast) => {
     var date = new Date(forecast.dt * 1000);
     var dayOfWeek = date.toLocaleDateString("en-US", { weekday: "long" });
 
-    // Если для данного дня недели еще не был добавлен прогноз, добавляем его
     if (!weeklyForecast[dayOfWeek]) {
       weeklyForecast[dayOfWeek] = {
         date: date,
@@ -61,7 +61,6 @@ function displayWeeklyForecast(forecasts) {
     }
   });
 
-  // Выводим прогноз погоды на неделю по дням недели
   Object.keys(weeklyForecast).forEach((dayOfWeek) => {
     var forecast = weeklyForecast[dayOfWeek];
 
@@ -77,3 +76,41 @@ function displayWeeklyForecast(forecasts) {
   });
 }
 
+function searchWeatherByGeolocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      var lat = position.coords.latitude;
+      var lon = position.coords.longitude;
+      var apiUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+
+      fetch(apiUrl)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          var search = document.getElementById("search-box");
+          var cityName = data.city.name;
+          search.value = cityName;
+          displayWeatherData(data.city, cityName);
+          displayWeeklyForecast(data.list);
+          document.getElementById("preloader").style.display = "none";
+          document.getElementById("content").style.display = "block";
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Failed");
+        });
+    });
+  } else {
+    console.error("Geolocation is not supported by this browser.");
+    alert("Geolocation is not supported by this browser.");
+  }
+}
+
+searchWeatherByGeolocation();
+document
+  .getElementById("search-btn")
+  .addEventListener("click", searchWeatherByCity);
